@@ -30,6 +30,23 @@ body {
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+
+ .video-responsive {
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  position: relative;
+  height: 0;
+  /* resize: both; */
+}
+
+.video-responsive iframe {
+  /* left: 0;
+  top: 0; */
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
 button {
   -webkit-app-region: no-drag;
   }
