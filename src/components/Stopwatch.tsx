@@ -56,6 +56,9 @@ function Stopwatch({
     const theme = useTheme();
     const [breakSnackbarOpen, setBreakSnackbarOpen] = useState(false);
 
+    const platform = window.navigator.platform;
+    const screenHeight = window.innerHeight;
+
     const handleReset = useCallback(() => {
         setStartTime(0);
         setTime(0);
@@ -75,6 +78,7 @@ function Stopwatch({
     }, [isRunning, time, setIsRunning]);
 
     const updateTime = useCallback(() => {
+        console.log(platform);
         const now = Date.now();
         const elapsedTime = now - startTime;
         setTime(elapsedTime);
@@ -145,14 +149,8 @@ function Stopwatch({
                 gap={1}
                 alignItems={"center"}
                 justifyContent={"space-between"}
-                className="stopwatch-buttons "
-                style={{
-                    position: "absolute",
-                    bottom: 24,
-                    left: 0,
-                    width: "100%",
-                    padding: 20,
-                }}
+                className="stopwatch-buttons"
+                style={{ paddingBottom: platform === "iPhone" ? 52 : 20 }}
             >
                 {/* break button */}
                 <Button
@@ -196,12 +194,17 @@ function Stopwatch({
                 </Fab>
 
                 <Snackbar
-                    style={{ bottom: 32 }}
+                    style={{ bottom: platform === 'iPhone' ? 52 : 32, width: "100vw", position: "fixed" }}
                     open={breakSnackbarOpen}
                     message="Note archived"
                     onClose={() => setBreakSnackbarOpen(false)}
                 >
                     <Alert
+                        style={{
+                            width: "95%",
+                            transition: "all 0.5s ease-in-out",
+                        }}
+                        elevation={4}
                         severity="info"
                         onClose={() => setBreakSnackbarOpen(false)}
                     >
