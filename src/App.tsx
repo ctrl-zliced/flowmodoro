@@ -12,6 +12,7 @@ import {
 
 import Stopwatch from "./components/Stopwatch";
 import PaletteIcon from "@mui/icons-material/Palette";
+import { BarChart } from "@mui/icons-material";
 
 function Hello() {
     const [time, setTime] = React.useState(0);
@@ -22,6 +23,7 @@ function Hello() {
     const [background, setBackground] = React.useState(0);
     const theme = useTheme();
     const [themeButtonDisabled, setThemeButtonDisabled] = React.useState(false);
+    const [showStats, setShowStats] = React.useState(false);
 
     const handleBackgroundChange = async () => {
         // Disable button to prevent multiple clicks
@@ -77,6 +79,8 @@ function Hello() {
                         setIsBreak={setIsBreak}
                         breakTime={breakTime}
                         setBreakTime={setBreakTime}
+                        showStats={showStats}
+                        setShowStats={setShowStats}
                     />
                 </Grid>
 
@@ -97,6 +101,20 @@ function Hello() {
                     }}
                 >
                     <PaletteIcon />
+                </Fab>
+                <Fab
+                    disabled={themeButtonDisabled}
+                    onClick={() => setShowStats(!showStats)}
+                    size="small"
+                    style={{
+                        position: "fixed",
+                        top: 70,
+                        right: 20,
+                        color: "white",
+                        backgroundColor: showStats ? theme.palette.secondary.main : theme.palette.grey[800],
+                    }}
+                >
+                    <BarChart />
                 </Fab>
             </Grid>
         </div>

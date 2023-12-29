@@ -32,6 +32,8 @@ interface StopwatchProps {
     setIsBreak: React.Dispatch<React.SetStateAction<boolean>>;
     breakTime: number;
     setBreakTime: React.Dispatch<React.SetStateAction<number>>;
+    showStats?: boolean;
+    setShowStats?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -48,6 +50,8 @@ function Stopwatch({
     setIsBreak,
     breakTime,
     setBreakTime,
+    showStats,
+    setShowStats,
 }: StopwatchProps): JSX.Element {
     const [startTime, setStartTime] = useState(0);
     const [breakEndTime, setBreakEndTime] = useState(0);
@@ -73,22 +77,30 @@ function Stopwatch({
         setTotalBreakTime(0);
         setBreaksCompleted(0);
         setTotalBreakTimeDisplay(0);
-    }
+    };
 
     const updateTotalFlowTime = () => {
-        setTotalFlowTime(Math.round((totalFlowTime + time) / 1000, ) * 1000);
-    }
+        setTotalFlowTime(Math.round((totalFlowTime + time) / 1000) * 1000);
+    };
 
     const handleReset = useCallback(() => {
         updateTotalFlowTime();
         if (time > 0) {
-        setResets(resets + 1);
+            setResets(resets + 1);
         }
         setStartTime(0);
         setTime(0);
         setIsRunning(false);
         setBreakTime(0);
-    }, [setTime, setIsRunning, setTotalFlowTime, time, setBreakTime, resets, setResets]);
+    }, [
+        setTime,
+        setIsRunning,
+        setTotalFlowTime,
+        time,
+        setBreakTime,
+        resets,
+        setResets,
+    ]);
 
     const handleStartClick = useCallback(() => {
         if (!isRunning) {
@@ -118,7 +130,7 @@ function Stopwatch({
             setIsBreak(true);
         } else {
             setTotalBreakTime(totalBreakTime + (breakStartTime - breakTime));
-            setTotalFlowTime(Math.round((totalFlowTime - time) / 1000, ) * 1000);
+            setTotalFlowTime(Math.round((totalFlowTime - time) / 1000) * 1000);
             clearInterval(breakInterval.current);
             setIsBreak(false);
         }
@@ -132,7 +144,7 @@ function Stopwatch({
             setTime(breakTime * 5);
         }
         if (breakTime <= 0) {
-            setTotalBreakTime(totalBreakTime + breakStartTime)
+            setTotalBreakTime(totalBreakTime + breakStartTime);
             setBreaksCompleted(breaksCompleted + 1);
             setBreakSnackbarOpen(true);
             setIsBreak(false);
@@ -226,7 +238,11 @@ function Stopwatch({
                 </Fab>
 
                 <Snackbar
-                    style={{ bottom: platform === 'iPhone' ? 52 : 32, width: "100vw", position: "fixed" }}
+                    style={{
+                        bottom: platform === "iPhone" ? 52 : 32,
+                        width: "100vw",
+                        position: "fixed",
+                    }}
                     open={breakSnackbarOpen}
                     message="Note archived"
                     onClose={() => setBreakSnackbarOpen(false)}
@@ -245,38 +261,51 @@ function Stopwatch({
                 </Snackbar>
             </Stack>
 
-            <Text
-                color="rgba(255,255,255,0.2)"
-                variant="subtitle2"
-                textAlign={"center"}
-            >
-                Resets: {resets}
-            </Text>
-            <Text
-                color="rgba(255,255,255,0.2)"
-                variant="subtitle2"
-                textAlign={"center"}
-            >
-                Full breaks: {breaksCompleted}
-            </Text>
-            <Text
-                color="rgba(255,255,255,0.2)"
-                variant="subtitle2"
-                textAlign={"center"}
-            >
-                Total flowtime: {formatTime(totalFlowTimeDisplay)}
-            </Text>
-            <Text
-                color="rgba(255,255,255,0.2)"
-                variant="subtitle2"
-                textAlign={"center"}
-            >
-                Total breaktime: {formatTime(totalBreakTimeDisplay)}
-            </Text>
+            {/* stats */}
+            {showStats && 
+            <div>
+                <Text
+                    color="rgba(255,255,255,0.2)"
+                    variant="subtitle2"
+                    textAlign={"center"}
+                >
+                    Resets: {resets}
+                </Text>
+                <Text
+                    color="rgba(255,255,255,0.2)"
+                    variant="subtitle2"
+                    textAlign={"center"}
+                >
+                    Full breaks: {breaksCompleted}
+                </Text>
+                <Text
+                    color="rgba(255,255,255,0.2)"
+                    variant="subtitle2"
+                    textAlign={"center"}
+                >
+                    Total flowtime: {formatTime(totalFlowTimeDisplay)}
+                </Text>
+                <Text
+                    color="rgba(255,255,255,0.2)"
+                    variant="subtitle2"
+                    textAlign={"center"}
+                >
+                    Total breaktime: {formatTime(totalBreakTimeDisplay)}
+                </Text>
 
-            <div className="flex flex-row justify-center">
-            <Button variant="text" size="small" className="hover:scale-105" onClick={resetStats}>reset</Button>
+                <div className="flex flex-row justify-center">
+                    <Button
+                        variant="text"
+                        size="small"
+                        className="hover:scale-105"
+                        onClick={resetStats}
+                    >
+                        reset
+                    </Button>
+                </div>
+            
             </div>
+            }
         </div>
     );
 }
