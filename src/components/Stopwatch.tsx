@@ -55,16 +55,40 @@ function Stopwatch({
     const breakInterval = useRef<NodeJS.Timeout>();
     const theme = useTheme();
     const [breakSnackbarOpen, setBreakSnackbarOpen] = useState(false);
+    const [totalFlowTime, setTotalFlowTime] = useState(0);
+    const [totalFlowTimeDisplay, setTotalFlowTimeDisplay] = useState(0);
+    const [resets, setResets] = useState(0);
+    const [totalBreakTime, setTotalBreakTime] = useState(0);
+    const [totalBreakTimeDisplay, setTotalBreakTimeDisplay] = useState(0);
+    const [breaksCompleted, setBreaksCompleted] = useState(0);
+    const [breakStartTime, setBreakStartTime] = useState(0);
 
     const platform = window.navigator.platform;
     const screenHeight = window.innerHeight;
 
+    const resetStats = () => {
+        setTotalFlowTime(0);
+        setTotalFlowTimeDisplay(0);
+        setResets(0);
+        setTotalBreakTime(0);
+        setBreaksCompleted(0);
+        setTotalBreakTimeDisplay(0);
+    }
+
+    const updateTotalFlowTime = () => {
+        setTotalFlowTime(Math.round((totalFlowTime + time) / 1000, ) * 1000);
+    }
+
     const handleReset = useCallback(() => {
+        updateTotalFlowTime();
+        if (time > 0) {
+        setResets(resets + 1);
+        }
         setStartTime(0);
         setTime(0);
         setIsRunning(false);
         setBreakTime(0);
-    }, [setTime, setIsRunning]);
+    }, [setTime, setIsRunning, setTotalFlowTime, time, setBreakTime, resets, setResets]);
 
     const handleStartClick = useCallback(() => {
         if (!isRunning) {
@@ -82,14 +106,19 @@ function Stopwatch({
         const now = Date.now();
         const elapsedTime = now - startTime;
         setTime(elapsedTime);
+        setTotalFlowTimeDisplay(totalFlowTime + elapsedTime);
         setBreakTime(elapsedTime / 5);
-    }, [startTime, setTime]);
+    }, [startTime, setTime, totalFlowTime]);
 
     const handleBreakClick = useCallback(() => {
         if (!isBreak) {
+            updateTotalFlowTime();
+            setBreakStartTime(breakTime);
             setBreakEndTime(Date.now() + breakTime); // set break end time
             setIsBreak(true);
         } else {
+            setTotalBreakTime(totalBreakTime + (breakStartTime - breakTime));
+            setTotalFlowTime(Math.round((totalFlowTime - time) / 1000, ) * 1000);
             clearInterval(breakInterval.current);
             setIsBreak(false);
         }
@@ -98,10 +127,13 @@ function Stopwatch({
     const updateBreakTime = useCallback(() => {
         const now = Date.now();
         setBreakTime(breakEndTime - now);
+        setTotalBreakTimeDisplay(totalBreakTime + (breakStartTime - breakTime));
         if (time > 0) {
             setTime(breakTime * 5);
         }
         if (breakTime <= 0) {
+            setTotalBreakTime(totalBreakTime + breakStartTime)
+            setBreaksCompleted(breaksCompleted + 1);
             setBreakSnackbarOpen(true);
             setIsBreak(false);
             setTime(0);
@@ -212,6 +244,39 @@ function Stopwatch({
                     </Alert>
                 </Snackbar>
             </Stack>
+
+            <Text
+                color="rgba(255,255,255,0.2)"
+                variant="subtitle2"
+                textAlign={"center"}
+            >
+                Resets: {resets}
+            </Text>
+            <Text
+                color="rgba(255,255,255,0.2)"
+                variant="subtitle2"
+                textAlign={"center"}
+            >
+                Full breaks: {breaksCompleted}
+            </Text>
+            <Text
+                color="rgba(255,255,255,0.2)"
+                variant="subtitle2"
+                textAlign={"center"}
+            >
+                Total flowtime: {formatTime(totalFlowTimeDisplay)}
+            </Text>
+            <Text
+                color="rgba(255,255,255,0.2)"
+                variant="subtitle2"
+                textAlign={"center"}
+            >
+                Total breaktime: {formatTime(totalBreakTimeDisplay)}
+            </Text>
+
+            <div className="flex flex-row justify-center">
+            <Button variant="text" size="small" className="hover:scale-105" onClick={resetStats}>reset</Button>
+            </div>
         </div>
     );
 }

@@ -2,26 +2,16 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-
 import React from "react";
 import {
     Grid,
     Typography as Text,
     Fab,
     useTheme,
-    TextField,
-    Button,
 } from "@mui/material";
 
-import { useDebounce } from "usehooks-ts";
-// import Stats from './components/Stats';
 import Stopwatch from "./components/Stopwatch";
 import PaletteIcon from "@mui/icons-material/Palette";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import MusicOffIcon from "@mui/icons-material/MusicOff";
-import ReactPlayer from "react-player";
 
 function Hello() {
     const [time, setTime] = React.useState(0);
@@ -55,7 +45,8 @@ function Hello() {
         // root container
         <div
             className={`h-screen w-screen p-10 flex justify-center items-start drag
-      ${backgrounds[background]}`}
+            ${backgrounds[background]}
+      `}
         >
             <Grid
                 className="drag"
