@@ -150,6 +150,7 @@ function Stopwatch({
         setTotalBreakTimeDisplay(totalBreakTime + (breakStartTime - breakTime));
         if (time > 0) {
             setTime(breakTime * 5);
+            localStorage.setItem("time", (breakTime * 5).toString());
         }
         if (breakTime <= 0) {
             setTotalBreakTime(totalBreakTime + breakStartTime);
@@ -157,6 +158,9 @@ function Stopwatch({
             setBreakSnackbarOpen(true);
             setIsBreak(false);
             setTime(0);
+            localStorage.setItem("totalBreakTime", (totalBreakTime + breakStartTime).toString());
+            localStorage.setItem("breaksCompleted", (breaksCompleted + 1).toString());
+            localStorage.setItem("time", "0");
         }
     }, [breakEndTime, breakTime, setBreakTime]);
 
