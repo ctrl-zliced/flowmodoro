@@ -77,6 +77,10 @@ function Stopwatch({
         setTotalBreakTime(0);
         setBreaksCompleted(0);
         setTotalBreakTimeDisplay(0);
+        localStorage.setItem("totalFlowTime", "0");
+        localStorage.setItem("totalBreakTime", "0");
+        localStorage.setItem("breaksCompleted", "0");
+        localStorage.setItem("resets", "0");
     };
 
     const updateTotalFlowTime = () => {
@@ -92,6 +96,8 @@ function Stopwatch({
         setTime(0);
         setIsRunning(false);
         setBreakTime(0);
+        localStorage.setItem("resets", (resets +1).toString());
+        localStorage.setItem("time", "0");
     }, [
         setTime,
         setIsRunning,
@@ -99,7 +105,7 @@ function Stopwatch({
         time,
         setBreakTime,
         resets,
-        setResets,
+        // setResets,
     ]);
 
     const handleStartClick = useCallback(() => {
@@ -118,7 +124,9 @@ function Stopwatch({
         const now = Date.now();
         const elapsedTime = now - startTime;
         setTime(elapsedTime);
+        localStorage.setItem("time", elapsedTime.toString());
         setTotalFlowTimeDisplay(totalFlowTime + elapsedTime);
+        localStorage.setItem("totalFlowTime", (totalFlowTime + elapsedTime).toString());
         setBreakTime(elapsedTime / 5);
     }, [startTime, setTime, totalFlowTime]);
 
@@ -171,6 +179,35 @@ function Stopwatch({
         return () => clearInterval(breakInterval.current);
     }, [isBreak, updateBreakTime]);
 
+    // get stats from local storage
+    useEffect(() => {
+        const storedTotalFlowTime = localStorage.getItem("totalFlowTime");
+        const storedTotalBreakTime = localStorage.getItem("totalBreakTime");
+        const storedBreaksCompleted = localStorage.getItem("breaksCompleted");
+        const storedResets = localStorage.getItem("resets");
+        const storedTime = localStorage.getItem("time");
+
+        if (storedTime) {
+            setTime(parseInt(storedTime));
+            setBreakTime(parseInt(storedTime) / 5);
+        }
+
+        if (storedTotalFlowTime && storedTime) {
+            setTotalFlowTime(parseInt(storedTotalFlowTime) - parseInt(storedTime));
+            setTotalFlowTimeDisplay(parseInt(storedTotalFlowTime));
+        }
+        if (storedTotalBreakTime) {
+            setTotalBreakTime(parseInt(storedTotalBreakTime));
+            setTotalBreakTimeDisplay(parseInt(storedTotalBreakTime));
+        }
+        if (storedBreaksCompleted) {
+            setBreaksCompleted(parseInt(storedBreaksCompleted));
+        }
+        if (storedResets) {
+            setResets(parseInt(storedResets));
+        }
+    }, []);
+    
     return (
         <div>
             <Text
